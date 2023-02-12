@@ -691,13 +691,20 @@ int USBKeyboardGamepad::_getc() {
 bool USBKeyboardGamepad::SendKeyCode(uint8_t key, uint8_t modifier) {
     _mutex.lock();
 
+    uint8_t code;
+    if (key >= 136) {
+        code = key - 136;
+    } else {
+        code = keymap[key].usage;
+    }
+
     // Send a simulated keyboard keypress. Returns true if successful.
     HID_REPORT report;
 
     report.data[0] = REPORT_ID_KEYBOARD;
     report.data[1] = modifier;
     report.data[2] = 0;
-    report.data[3] = keymap[key].usage;
+    report.data[3] = code;
     report.data[4] = 0;
     report.data[5] = 0;
     report.data[6] = 0;
